@@ -1,0 +1,308 @@
+﻿/* ===========================
+   Admin Dashboard - Custom CSS
+   =========================== */
+
+/* Tổng thể */
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background-color: #f8f9fa;
+    color: #212529;
+    overflow-x: hidden; /* Quan trọng: tránh scroll ngang */
+}
+
+/* Navbar */
+.navbar-brand {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.navbar .nav-link {
+    color: #f8f9fa !important;
+    transition: color 0.3s ease;
+}
+
+    .navbar .nav-link:hover {
+        color: #ffc107 !important;
+    }
+
+/* FIX SIDEBAR - QUAN TRỌNG: Sửa lỗi click */
+.sidebar {
+    height: calc(100vh - 56px); /* Chiều cao trừ navbar */
+    position: fixed;
+    top: 56px;
+    left: 0;
+    width: 220px; /* Fixed width */
+    overflow-y: auto;
+    padding-top: 1rem;
+    transition: all 0.3s ease;
+    background-color: #212529;
+    z-index: 1000; /* Đảm bảo sidebar nằm trên */
+}
+
+    .sidebar .nav-link {
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+        transition: background-color 0.3s, color 0.3s;
+        display: flex;
+        align-items: center;
+        color: #adb5bd !important;
+        text-decoration: none;
+        position: relative;
+        z-index: 1001; /* Link nằm trên sidebar */
+    }
+
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #ffc107 !important;
+            text-decoration: none;
+        }
+
+    .sidebar .bi {
+        margin-right: 8px;
+    }
+
+/* Main content - FIXED: Đảm bảo không bị che */
+.main-content-area {
+    margin-left: 0;
+    transition: margin-left 0.3s ease;
+    position: relative;
+    z-index: 1; /* Thấp hơn sidebar */
+    min-height: calc(100vh - 56px);
+    background-color: #f8f9fa;
+}
+
+/* Khi màn hình lớn, đẩy nội dung sang phải */
+@media (min-width: 768px) {
+    .main-content-area {
+        margin-left: 220px;
+        width: calc(100% - 220px);
+    }
+}
+
+/* Dashboard summary cards (ô thống kê nhỏ) */
+.dashboard-card {
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    text-align: center;
+    background-color: #fff;
+    padding: 1.5rem;
+    position: relative;
+    z-index: 2;
+}
+
+    .dashboard-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .dashboard-card i {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+/* =============================
+   DASHBOARD MENU BANNERS - FIX CLICK
+   ============================= */
+.dashboard-banners {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+    position: relative;
+    z-index: 10;
+}
+
+.banner-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+    color: #212529;
+    display: block; /* Quan trọng */
+    position: relative;
+    z-index: 11;
+}
+
+    .banner-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        text-decoration: none;
+        color: #212529;
+    }
+
+    /* Icon lớn trong banner */
+    .banner-card i {
+        font-size: 2.5rem;
+        margin-bottom: 0.75rem;
+        display: block;
+    }
+
+/* Màu cho từng banner */
+.banner-dashboard i {
+    color: #0d6efd;
+}
+
+.banner-products i {
+    color: #198754;
+}
+
+.banner-orders i {
+    color: #ffc107;
+}
+
+.banner-users i {
+    color: #6f42c1;
+}
+
+.banner-reports i {
+    color: #dc3545;
+}
+
+.banner-cart i {
+    color: #fd7e14;
+}
+
+/* Footer */
+footer {
+    font-size: 0.9rem;
+    background-color: #212529;
+    color: #f8f9fa;
+    position: relative;
+    z-index: 1;
+}
+
+/* Scrollbar tinh tế cho sidebar */
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+}
+
+/* Căn chỉnh layout chính */
+.admin-dashboard {
+    margin-left: 220px;
+}
+
+@media (max-width: 768px) {
+    .admin-dashboard {
+        margin-left: 0;
+    }
+}
+
+/* Responsive: Thu gọn sidebar trên mobile */
+@media (max-width: 767.98px) {
+    .sidebar {
+        position: relative;
+        height: auto;
+        top: 0;
+        width: 100%;
+    }
+
+    .main-content-area {
+        margin-left: 0;
+        width: 100%;
+    }
+}
+
+/* Product for admin */
+table img {
+    object-fit: cover;
+}
+
+.alert {
+    border-radius: 10px;
+}
+
+form {
+    background-color: #fff;
+}
+
+.btn i {
+    vertical-align: middle;
+}
+
+.dashboard-card {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+    .dashboard-card:hover,
+    .hover-shadow:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        cursor: pointer;
+    }
+
+/* FIX: Đảm bảo banner có thể click */
+.dashboard-banners a {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}
+
+.banner-card {
+    pointer-events: auto !important;
+}
+
+/* Đảm bảo biểu đồ không đè lên banner */
+#revenueChart,
+canvas {
+    position: relative;
+    z-index: 1;
+}
+
+/* Z-index hierarchy - QUAN TRỌNG */
+.navbar {
+    z-index: 1030;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
+.sidebar {
+    z-index: 1020;
+}
+
+.main-content-area {
+    z-index: 1;
+}
+
+.banner-card,
+.dashboard-card {
+    z-index: 10;
+}
+
+/* Fix cho container chính */
+.container-fluid {
+    position: relative;
+    z-index: 1;
+}
+
+/* Đảm bảo row không bị ảnh hưởng bởi sidebar */
+.row {
+    position: relative;
+    z-index: 1;
+}
+
+/* Fix cho các link trong sidebar */
+.sidebar-sticky {
+    position: relative;
+    z-index: 1001;
+}
+
+.sidebar .nav-item {
+    position: relative;
+    z-index: 1002;
+}

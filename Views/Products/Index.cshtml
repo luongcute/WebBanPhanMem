@@ -1,0 +1,21 @@
+﻿@model IEnumerable<WebBanPhanMem.Models.Product>
+@{
+    ViewData["Title"] = "Danh sách sản phẩm";
+}
+
+<h2>@ViewData["Title"]</h2>
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-3 mb-3">
+            <div class="card h-100">
+                <img src="@item.ImageUrl" class="card-img-top" alt="@item.Name" />
+                <div class="card-body">
+                    <h5 class="card-title">@item.Name</h5>
+                    <p class="card-text text-danger">@item.Price.ToString("N0") ₫</p>
+                    <a href="/Products/Details/@item.Id" class="btn btn-primary btn-sm">Xem chi tiết</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

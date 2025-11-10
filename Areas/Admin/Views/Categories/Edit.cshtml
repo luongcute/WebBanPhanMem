@@ -1,0 +1,30 @@
+﻿@model WebBanPhanMem.Areas.Admin.Models.CategoryAdminViewModel
+
+@{
+    ViewData["Title"] = "Chỉnh sửa danh mục";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4 text-primary fw-bold">
+        <i class="bi bi-pencil-square"></i> Chỉnh sửa danh mục
+    </h2>
+
+    <form asp-action="Edit" method="post" class="shadow-sm p-4 bg-white rounded">
+        <input type="hidden" asp-for="Id" />
+
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label fw-bold"></label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="text-end">
+            <a asp-action="Index" class="btn btn-secondary me-2">Quay lại</a>
+            <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,66 @@
+﻿@model WebBanPhanMem.Areas.Admin.Models.ProductAdminViewModel
+
+@{
+    ViewData["Title"] = "Chỉnh sửa sản phẩm";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4 text-warning fw-bold">
+        <i class="bi bi-pencil-square"></i> Chỉnh sửa sản phẩm
+    </h2>
+
+    <form asp-action="Edit" enctype="multipart/form-data" method="post" class="shadow-sm p-4 bg-white rounded">
+        <input type="hidden" asp-for="Id" />
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label asp-for="Name" class="form-label fw-bold"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="Price" class="form-label fw-bold"></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label fw-bold"></label>
+            <textarea asp-for="Description" rows="3" class="form-control"></textarea>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label asp-for="CategoryId" class="form-label fw-bold"></label>
+                <select asp-for="CategoryId" class="form-select"
+                        asp-items="@(new SelectList(ViewBag.Categories, "Id", "Name", Model.CategoryId))">
+                    <option value="">-- Chọn danh mục --</option>
+                </select>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="ImageFile" class="form-label fw-bold"></label>
+                <input asp-for="ImageFile" type="file" class="form-control" accept="image/*" />
+            </div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+        {
+            <div class="mb-3">
+                <label class="fw-bold">Hình ảnh hiện tại:</label><br />
+                <img src="@Model.ImageUrl" alt="@Model.Name" width="120" height="120" class="rounded border" />
+            </div>
+        }
+
+        <div class="text-end">
+            <a asp-action="Index" class="btn btn-secondary me-2">Quay lại</a>
+            <button type="submit" class="btn btn-warning text-white">Cập nhật</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

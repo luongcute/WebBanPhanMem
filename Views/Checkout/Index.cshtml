@@ -1,0 +1,25 @@
+﻿@model List<WebBanPhanMem.Controllers.CartItem>
+
+<h2>Xác nhận thanh toán</h2>
+
+<table class="table table-bordered">
+    <tr>
+        <th>Tên sản phẩm</th>
+        <th>Giá</th>
+        <th>Số lượng</th>
+        <th>Tổng</th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.Name</td>
+            <td>@item.Price.ToString("N0") ₫</td>
+            <td>@item.Quantity</td>
+            <td>@item.Total.ToString("N0") ₫</td>
+        </tr>
+    }
+</table>
+
+<form asp-action="PlaceOrder" method="post">
+    <button type="submit" class="btn btn-success">Xác nhận đặt hàng</button>
+</form>

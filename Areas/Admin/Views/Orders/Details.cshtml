@@ -1,0 +1,79 @@
+﻿@model WebBanPhanMem.Models.Order
+
+@{
+    ViewData["Title"] = "Chi tiết Đơn hàng #" + Model.Id;
+    // Tính tổng tiền từ các OrderItem, sử dụng thuộc tính Price và Quantity trong OrderItem
+    var totalAmount = Model.Items?.Sum(i => i.Price * i.Quantity) ?? 0;
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4 text-info fw-bold">
+        <i class="bi bi-file-text"></i> Chi tiết Đơn hàng #@Model.Id
+    </h2>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-info text-white fw-bold">
+            Thông tin chung
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Mã đơn hàng</dt>
+                <dd class="col-sm-9">#@Model.Id</dd>
+
+                <dt class="col-sm-3">Ngày đặt hàng</dt>
+                <dd class="col-sm-9">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm:ss")</dd>
+
+                <dt class="col-sm-3">Tên khách hàng</dt>
+                <dd class="col-sm-9">
+                    @ViewBag.CustomerName
+                </dd>
+
+                <dt class="col-sm-3">Tổng cộng</dt>
+                <dd class="col-sm-9 text-danger fw-bold">@totalAmount.ToString("N0") ₫</dd>
+
+            </dl>
+        </div>
+    </div>
+
+    <h4 class="mb-3"><i class="bi bi-box-seam"></i> Danh sách Sản phẩm</h4>
+
+    <table class="table table-bordered table-striped align-middle">
+        <thead class="table-secondary">
+            <tr>
+                <th>Sản phẩm</th>
+                <th class="text-center">Giá/SP</th>
+                <th class="text-center">Số lượng</th>
+                <th class="text-end">Thành tiền</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Items != null)
+            {
+                foreach (var item in Model.Items)
+                {
+                    var subtotal = item.Price * item.Quantity;
+                    <tr>
+                        <td>
+                            <strong>@item.Product?.Name</strong>
+                            <br>
+                            <small class="text-muted">(@item.Product?.Category?.Name)</small>
+                        </td>
+                        <td class="text-center">@item.Price.ToString("N0") ₫</td>
+                        <td class="text-center">@item.Quantity</td>
+                        <td class="text-end fw-bold">@subtotal.ToString("N0") ₫</td>
+                    </tr>
+                }
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3" class="text-end fw-bold">TỔNG CỘNG ĐƠN HÀNG</td>
+                <td class="text-end text-danger fw-bold">@totalAmount.ToString("N0") ₫</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div class="mt-4">
+        <a asp-action="Index" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Quay lại</a>
+    </div>
+</div>

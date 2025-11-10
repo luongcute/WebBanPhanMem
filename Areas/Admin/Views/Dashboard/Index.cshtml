@@ -1,0 +1,225 @@
+﻿@{
+    ViewData["Title"] = "Bảng điều khiển quản trị";
+
+    // Khai báo và khởi tạo List<string/decimal> trống để đảm bảo chúng không bao giờ là null
+    List<string> months = new List<string>();
+    List<decimal> totals = new List<decimal>();
+
+    // Lấy dữ liệu từ ViewBag và đảm bảo nó không null
+    var monthlyRevenue = ViewBag.MonthlyRevenue as IEnumerable<dynamic>;
+
+    if (monthlyRevenue != null)
+    {
+        // Duyệt qua dữ liệu và sắp xếp lại thứ tự (để biểu đồ đi từ cũ -> mới)
+        foreach (var item in monthlyRevenue.Reverse()) // Đảo ngược để hiển thị tháng cũ nhất trước
+        {
+            if (item.Month != null)
+            {
+                months.Add(item.Month.ToString());
+            }
+            if (item.Total != null)
+            {
+                // Chuyển đổi sang decimal để đảm bảo loại dữ liệu đúng trong C#
+                totals.Add((decimal)item.Total);
+            }
+        }
+    }
+
+    // Chuyển đổi dữ liệu sang chuỗi JSON để sử dụng an toàn trong JavaScript
+    var monthsJson = System.Text.Json.JsonSerializer.Serialize(months);
+    var totalsJson = System.Text.Json.JsonSerializer.Serialize(totals);
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4 text-center text-primary fw-bold">
+        <i class="bi bi-speedometer2"></i> Bảng điều khiển quản trị
+    </h2>
+
+    <!-- Ô thống kê tổng quan -->
+    <div class="row text-center g-3 mb-4">
+        <!-- SẢN PHẨM -->
+        <div class="col-md-3">
+            <a asp-area="Admin" asp-controller="Products" asp-action="Index" class="text-decoration-none d-block">
+                <div class="dashboard-card border-start border-primary border-4 hover-shadow">
+                    <i class="bi bi-box-seam text-primary"></i>
+                    <h5 class="mt-2 text-primary">Sản phẩm</h5>
+                    <h3 class="text-dark">@ViewBag.TotalProducts</h3>
+                </div>
+            </a>
+        </div>
+
+        <!-- ĐƠN HÀNG -->
+        <div class="col-md-3">
+            <a asp-area="Admin" asp-controller="Orders" asp-action="Index" class="text-decoration-none d-block">
+                <div class="dashboard-card border-start border-success border-4 hover-shadow">
+                    <i class="bi bi-bag-check text-success"></i>
+                    <h5 class="mt-2 text-success">Đơn hàng</h5>
+                    <h3 class="text-dark">@ViewBag.TotalOrders</h3>
+                </div>
+            </a>
+        </div>
+
+        <!-- NGƯỜI DÙNG -->
+        <div class="col-md-3">
+            <a asp-area="Admin" asp-controller="Users" asp-action="Index" class="text-decoration-none d-block">
+                <div class="dashboard-card border-start border-warning border-4 hover-shadow">
+                    <i class="bi bi-people text-warning"></i>
+                    <h5 class="mt-2 text-warning">Người dùng</h5>
+                    <h3 class="text-dark">@ViewBag.TotalUsers</h3>
+                </div>
+            </a>
+        </div>
+
+        <!-- DOANH THU -->
+        <div class="col-md-3">
+            <a asp-area="Admin" asp-controller="Reports" asp-action="Index" class="text-decoration-none d-block">
+                <div class="dashboard-card border-start border-danger border-4 hover-shadow">
+                    <i class="bi bi-currency-exchange text-danger"></i>
+                    <h5 class="mt-2 text-danger">Doanh thu</h5>
+                    <h3 class="text-dark">@ViewBag.TotalRevenue</h3>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Banner điều hướng nhanh -->
+    <div class="dashboard-banners d-flex flex-wrap gap-3 justify-content-center mb-5">
+        <a asp-area="Admin" asp-controller="Products" asp-action="Index" class="banner-card banner-products">
+            <i class="bi bi-box-seam"></i>
+            <h5>Quản lý sản phẩm</h5>
+        </a>
+        <a asp-area="Admin" asp-controller="Orders" asp-action="Index" class="banner-card banner-orders">
+            <i class="bi bi-bag"></i>
+            <h5>Đơn hàng</h5>
+        </a>
+        <a asp-area="Admin" asp-controller="Users" asp-action="Index" class="banner-card banner-users">
+            <i class="bi bi-people"></i>
+            <h5>Người dùng</h5>
+        </a>
+        <a asp-area="Admin" asp-controller="Reports" asp-action="Index" class="banner-card banner-reports">
+            <i class="bi bi-graph-up"></i>
+            <h5>Báo cáo</h5>
+        </a>
+    </div>
+
+    <!-- Biểu đồ doanh thu -->
+    <div class="mt-5">
+        <h4 class="mb-3"><i class="bi bi-bar-chart"></i> Doanh thu 6 tháng gần nhất</h4>
+        <canvas id="revenueChart" height="100"></canvas>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Lấy dữ liệu từ C# (Đã được đảm bảo là JSON hợp lệ)
+        const labels = @Html.Raw(monthsJson);
+        const data = @Html.Raw(totalsJson);
+
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+
+        new Chart(ctx, {
+            type: 'bar', // Hoặc 'line'
+            data: {
+                labels: labels, // Tên tháng/năm
+                datasets: [{
+                    label: 'Doanh thu (₫)',
+                    data: data, // Tổng tiền
+                    backgroundColor: 'rgba(13, 110, 253, 0.6)', // Màu xanh primary
+                    borderColor: 'rgba(13, 110, 253, 1)',
+                    borderWidth: 1,
+                    borderRadius: 5,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false, // Cho phép chart lấp đầy container
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Doanh thu (₫)'
+                        },
+                        // Định dạng tiền tệ cho trục Y
+                        ticks: {
+                            callback: function(value, index, values) {
+                                return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                            }
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Tháng/Năm'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        // Định dạng tiền tệ cho tooltip
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += context.parsed.y.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+}
+
+
+<style>
+    .dashboard-card {
+        background: #fff;
+        padding: 20px;
+        border-radius: 12px;
+        transition: all 0.2s ease-in-out;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .hover-shadow:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    }
+
+    .dashboard-banners .banner-card {
+        flex: 1 1 200px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 25px 15px;
+        text-align: center;
+        color: #333;
+        text-decoration: none;
+        transition: 0.25s;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .banner-card i {
+        font-size: 32px;
+        color: #0d6efd;
+    }
+
+    .banner-card:hover {
+        background: #0d6efd;
+        color: #fff;
+        transform: translateY(-4px);
+    }
+
+        .banner-card:hover i {
+            color: #fff;
+        }
+</style>

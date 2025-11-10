@@ -1,0 +1,20 @@
+﻿@model WebBanPhanMem.Models.Product
+@{
+    ViewData["Title"] = "Chi tiết sản phẩm";
+}
+
+<div class="row">
+    <div class="col-md-4">
+        <img src="@Model.ImageUrl" class="img-fluid" alt="@Model.Name" />
+    </div>
+    <div class="col-md-8">
+        <h2>@Model.Name</h2>
+        <p>@Model.Description</p>
+        <h4 class="text-danger">@Model.Price.ToString("N0") ₫</h4>
+
+        <form asp-controller="Cart" asp-action="AddToCart" method="post">
+            <input type="hidden" name="productId" value="@Model.Id" />
+            <button type="submit" class="btn btn-success">Thêm vào giỏ hàng</button>
+        </form>
+    </div>
+</div>
