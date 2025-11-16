@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebBanPhanMem.Data;
 
 namespace WebBanPhanMem.Controllers
 {
+    [AllowAnonymous]
     public class ProductsController : Controller
     {
         private readonly ApplicationDbContext _context;

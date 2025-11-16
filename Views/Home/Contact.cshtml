@@ -1,7 +1,143 @@
-﻿@{
+﻿@* File: Views/Contact/Index.cshtml (Hoặc tên file View liên hệ của bạn) *@
+
+@model WebBanPhanMem.Models.ViewModels.ContactVM
+@{
+    // Đã thay đổi ViewData["Title"] để phản ánh việc loại bỏ chữ "Tư vấn" khỏi Banner
     ViewData["Title"] = "Liên hệ";
 }
 
-<h2>Liên hệ</h2>
-<p>Email: support@phanmembanquyen.vn</p>
-<p>Hotline: 0909 000 999</p>
+<style>
+    /* Styling cho Banner */
+    .contact-banner {
+        background: url('/images/banners/contact.jpg') center center / cover no-repeat;
+        height: 350px; /* hoặc auto responsive theo viewport */
+        width: 100%;
+    }
+
+    /* Styling cho container Google Map để có tỷ lệ khung hình */
+    .map-container {
+        position: relative;
+        overflow: hidden;
+        padding-top: 75%; /* Tỷ lệ 4:3 */
+    }
+
+        .map-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+</style>
+
+@* --- 1. BANNER (ĐÃ BỎ NỘI DUNG CHỮ) --- *@
+<div class="contact-banner mb-5">
+    @* ĐÃ XÓA: <h1 class="display-2 fw-bolder">LIÊN HỆ & TƯ VẤN</h1> *@
+</div>
+
+<div class="container">
+
+    @* HIỂN THỊ THÔNG BÁO THÀNH CÔNG/LỖI *@
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @* --- 2. NỘI DUNG GIỚI THIỆU --- *@
+    <div class="text-center mb-5">
+        <h2 class="text-primary fw-bold">GỬI YÊU CẦU BÁO GIÁ/ TƯ VẤN TỚI KST</h2>
+        <p class="lead text-muted">Quý Doanh nghiệp/ khách hàng có yêu cầu báo giá hoặc tư vấn, vui lòng gửi thông tin qua form dưới đây. KST sẽ liên hệ và phúc đáp sớm nhất!</p>
+        <p class="fw-bold">Trân trọng;</p>
+    </div>
+
+    @* --- 3. CHIA MÀN HÌNH (MAP & FORM) --- *@
+    <div class="row">
+
+        @* --- Cột Trái: GOOGLE MAP --- *@
+        <div class="col-lg-6 mb-4">
+            <h3 class="mb-3 text-secondary"><i class="bi bi-geo-alt-fill"></i> Bản đồ Vị trí</h3>
+            <div class="map-container rounded shadow">
+                @* THAY THẾ IFRAME NÀY BẰNG CODE GOOGLE MAP CỦA ĐỊA CHỈ THỰC TẾ *@
+                <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d931.012283133345!2d105.784964!3d21.03072!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ab4c7d5152a7%3A0xa6fd0e9a5a068a5f!2zVmnhu4d0IMOBIFRvd2VyLCBz4buRIDkgUC4gRHV5IFTDom4sIFAsIEPhuqd1IEdp4bqleSwgSMOgIE7hu5lp!5e0!3m2!1svi!2s!4v1762872540118!5m2!1svi!2s"
+                        width="100%"
+                        height="450"
+                        style="border:0;"
+                        allowfullscreen
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"
+                        title="Viet A Tower, Duy Tan, Cau Giay, Ha Noi">
+                </iframe>
+
+            </div>
+            <div class="mt-3">
+                <p class="mb-0 fw-bold">KST - Công ty Cổ phần Công nghệ Phần mềm</p>
+                <p class="text-muted">Địa chỉ: 123 Đường ABC, Phường XYZ, TP. Hồ Chí Minh</p>
+                <p class="text-muted">Điện thoại: (028) 1234 5678 | Email: info@kst.vn</p>
+            </div>
+        </div>
+
+        @* --- Cột Phải: CONTACT FORM --- *@
+        <div class="col-lg-6 mb-4">
+            <h3 class="mb-3 text-secondary"><i class="bi bi-envelope-fill"></i> Gửi Yêu cầu</h3>
+
+            @* ĐÃ SỬA LỖI 404: Thêm asp-controller="Contact" *@
+            <form asp-action="SendMessage" asp-controller="Contact" method="post" class="p-4 border rounded shadow-sm">
+
+                @* Thêm token chống giả mạo *@
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                @* 1. HỌ TÊN *@
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label">Họ tên (*)</label>
+                    <input asp-for="Name" class="form-control" placeholder="Nhập họ tên của bạn" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                @* 2. EMAIL *@
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label">Email (*)</label>
+                    <input asp-for="Email" class="form-control" placeholder="Nhập email liên hệ" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                @* 3. TIÊU ĐỀ *@
+                <div class="mb-3">
+                    <label asp-for="Subject" class="form-label">Tiêu đề (*)</label>
+                    <input asp-for="Subject" class="form-control" placeholder="Tiêu đề yêu cầu báo giá/tư vấn" />
+                    <span asp-validation-for="Subject" class="text-danger"></span>
+                </div>
+
+                @* 4. NỘI DUNG *@
+                <div class="mb-3">
+                    <label asp-for="Message" class="form-label">Nội dung (*)</label>
+                    <textarea asp-for="Message" class="form-control" rows="5" placeholder="Chi tiết yêu cầu của bạn"></textarea>
+                    <span asp-validation-for="Message" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg mt-3 w-100">
+                    <i class="bi bi-send"></i> Gửi Yêu cầu
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        // Đảm bảo Validation Scripts được tải để form chạy tốt
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

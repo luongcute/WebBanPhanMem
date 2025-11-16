@@ -1,37 +1,103 @@
-﻿@model List<WebBanPhanMem.Controllers.CartItem>
+﻿@using WebBanPhanMem.Models
+@using System.Globalization
+@model List<CartItem>
 
-<h2>Giỏ hàng</h2>
+<h2>🛒 Giỏ hàng của bạn</h2>
+<hr />
 
 @if (!Model.Any())
 {
-    <p>Giỏ hàng trống.</p>
+    <div class="alert alert-info text-center">
+        <p class="lead">Giỏ hàng trống.</p>
+        <a asp-controller="Products" asp-action="Index" class="btn btn-primary mt-2">Tiếp tục mua sắm</a>
+    </div>
 }
 else
 {
-    <table class="table table-bordered">
-        <tr>
-            <th>Tên sản phẩm</th>
-            <th>Giá</th>
-            <th>Số lượng</th>
-            <th>Tổng</th>
-            <th></th>
-        </tr>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.Name</td>
-                <td>@item.Price.ToString("N0") ₫</td>
-                <td>@item.Quantity</td>
-                <td>@item.Total.ToString("N0") ₫</td>
-                <td>
-                    <form asp-action="Remove" method="post">
-                        <input type="hidden" name="productId" value="@item.ProductId" />
-                        <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
-                    </form>
-                </td>
-            </tr>
-        }
-    </table>
+    var grandTotal = Model.Sum(item => item.Total);
 
-    <a href="/Checkout" class="btn btn-success">Thanh toán</a>
+    <div class="table-responsive">
+        <table class="table table-bordered align-middle">
+            <thead>
+                <tr>
+                    <th>Tên sản phẩm</th>
+                    <th class="text-end">Giá (₫)</th>
+                    <th class="text-center">Số lượng</th>
+                    <th class="text-end">Tổng (₫)</th>
+                    <th style="width: 100px;">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Name</td>
+
+                        <td class="text-end">
+                            @item.Price.ToString("N0", new CultureInfo("vi-VN")) ₫
+                        </td>
+
+                        <td>
+                            <form asp-action="UpdateCart" method="post" class="d-flex justify-content-center">
+                                <input type="hidden" name="productId" value="@item.ProductId" />
+                                <input type="number"
+                                       name="quantity"
+                                       value="@item.Quantity"
+                                       min="1"
+                                       class="form-control form-control-sm text-center"
+                                       style="width: 70px;"
+                                       onchange="this.form.submit()" />
+                            </form>
+                        </td>
+
+                        <td class="text-end fw-bold">
+                            @item.Total.ToString("N0", new CultureInfo("vi-VN")) ₫
+                        </td>
+
+                        <td class="text-center">
+                            <form asp-action="RemoveFromCart" method="post" asp-route-productId="@item.ProductId">
+                                <button type="submit" class="btn btn-outline-danger btn-sm">
+                                    <i class="bi bi-trash"></i> Xóa
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" class="text-end fw-bold">Tổng cộng:</td>
+                    <td class="text-end fw-bold text-success">
+                        @grandTotal.ToString("N0", new CultureInfo("vi-VN")) ₫
+                    </td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <div class="d-flex justify-content-between mt-4">
+        <a asp-controller="Products" asp-action="Index" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Tiếp tục mua hàng
+        </a>
+
+        @* ==========================
+           Nếu chưa đăng nhập → Hiện nút đăng nhập
+           Nếu đã đăng nhập → Đi tới Checkout như bình thường
+        ============================ *@
+        @if (!User.Identity.IsAuthenticated)
+        {
+            <a asp-area="" asp-controller="Account" asp-action="Login"
+               asp-route-returnUrl="/Cart/Checkout"
+               class="btn btn-warning btn-lg">
+                Đăng nhập để thanh toán
+            </a>
+        }
+        else
+        {
+            <a asp-controller="Cart" asp-action="Checkout" class="btn btn-success btn-lg">
+                Thanh toán <i class="bi bi-arrow-right"></i>
+            </a>
+        }
+    </div>
 }

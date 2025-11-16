@@ -1,0 +1,43 @@
+﻿@model WebBanPhanMem.Models.ContactMessage
+
+@{
+    ViewData["Title"] = "Chi tiết Tin nhắn";
+}
+
+<h1>Chi tiết Yêu cầu Liên hệ</h1>
+
+<div class="card shadow-sm mt-4">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">@Model.Subject</h4>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Name)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Name)</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Email)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Email)</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.SentDate)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.SentDate)</dd>
+
+            <dt class="col-sm-3">Trạng thái</dt>
+            <dd class="col-sm-9">
+                <span class="badge @(Model.IsRead ? "bg-success" : "bg-warning text-dark")">
+                    @(Model.IsRead ? "Đã đọc" : "Chưa đọc")
+                </span>
+            </dd>
+        </dl>
+
+        <hr />
+
+        <h5>Nội dung:</h5>
+        <p class="border p-3 rounded bg-light">
+            @Html.Raw(Model.Message.Replace("\n", "<br/>"))
+        </p>
+
+    </div>
+    <div class="card-footer">
+        <a asp-action="Index" class="btn btn-secondary">Quay lại Danh sách</a>
+    </div>
+</div>

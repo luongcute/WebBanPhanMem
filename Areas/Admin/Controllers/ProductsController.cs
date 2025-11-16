@@ -7,8 +7,9 @@ using WebBanPhanMem.Models;
 
 namespace WebBanPhanMem.Areas.Admin.Controllers
 {
-    [Area("Admin")    ]
-        [AllowAnonymous]
+    [Area("Admin")]
+    [Authorize(AuthenticationSchemes = "AdminAuth", Roles = "Admin")]
+
     public class ProductsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -33,7 +34,9 @@ namespace WebBanPhanMem.Areas.Admin.Controllers
                     Price = p.Price,
                     ImageUrl = p.ImageUrl,
                     CategoryId = p.CategoryId,
-                    CategoryName = p.Category != null ? p.Category.Name : "(Chưa có danh mục)"
+                    CategoryName = p.Category != null ? p.Category.Name : "(Chưa có danh mục)",
+                    HasLicenseKey = p.HasLicenseKey, // giả sử bạn đã thêm cột này trong Product
+                    LicenseCount = _context.LicenseKeys.Count(k => k.ProductId == p.Id && !k.IsUsed)
                 })
                 .ToListAsync();
 
@@ -84,7 +87,8 @@ namespace WebBanPhanMem.Areas.Admin.Controllers
                 Description = model.Description ?? "",
                 Price = model.Price,
                 CategoryId = model.CategoryId,
-                ImageUrl = fileUrl
+                ImageUrl = fileUrl,
+                HasLicenseKey = model.HasLicenseKey // nhớ gán trường này
             };
 
             _context.Products.Add(product);
@@ -109,7 +113,8 @@ namespace WebBanPhanMem.Areas.Admin.Controllers
                 Description = product.Description,
                 Price = product.Price,
                 ImageUrl = product.ImageUrl,
-                CategoryId = product.CategoryId
+                CategoryId = product.CategoryId,
+                HasLicenseKey = product.HasLicenseKey
             };
 
             ViewBag.Categories = _context.Categories.ToList();
@@ -159,6 +164,7 @@ namespace WebBanPhanMem.Areas.Admin.Controllers
             product.Description = model.Description ?? "";
             product.Price = model.Price;
             product.CategoryId = model.CategoryId;
+            product.HasLicenseKey = model.HasLicenseKey;
 
             _context.Products.Update(product);
             await _context.SaveChangesAsync();

@@ -30,5 +30,8 @@ namespace WebBanPhanMem.Areas.Admin.Models
 
         [Display(Name = "Số lượng license còn lại")]
         public int LicenseCount { get; set; }
+
+        public bool HasLicenseKey { get; set; } // true nếu sản phẩm dùng key
+
     }
 }

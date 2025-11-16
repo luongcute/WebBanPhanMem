@@ -1,0 +1,217 @@
+﻿@model WebBanPhanMem.Models.ViewModels.CheckoutVM
+
+@using System.Globalization
+
+@{
+    ViewData["Title"] = "Xác nhận Đơn hàng";
+}
+
+<h2 class="mb-4 text-primary"><i class="bi bi-cart-check"></i> Xác nhận Đơn hàng</h2>
+<hr />
+
+<div class="row">
+    @* --- Cột Trái: Thông tin người dùng & Thanh toán --- *@
+    <div class="col-lg-6">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white fw-bold">
+                Thông tin Giao dịch
+            </div>
+            <div class="card-body">
+                <form asp-action="PlaceOrder" asp-controller="Cart" method="post">
+                    @Html.AntiForgeryToken()
+
+                    @* Hiển thị Validation Summary *@
+                    <div asp-validation-summary="All" class="text-danger fs-6 mb-3"></div>
+
+                    <h5 class="fw-bold mb-3">Thông tin nhận hàng</h5>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="CustomerName" class="form-label">Họ tên người nhận Keys *</label>
+                        <input asp-for="CustomerName" class="form-control form-control-lg" placeholder="Nhập họ tên của bạn" />
+                        <span asp-validation-for="CustomerName" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Email" class="form-label">Email nhận Keys *</label>
+                        <input asp-for="Email" class="form-control form-control-lg" placeholder="Nhập địa chỉ email của bạn" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    @* Đã sửa lỗi PhoneNumber *@
+                    <div class="form-group mb-4">
+                        <label asp-for="PhoneNumber" class="form-label">Số điện thoại *</label>
+                        <input asp-for="PhoneNumber" class="form-control form-control-lg" placeholder="Nhập số điện thoại" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </div>
+
+                    <hr />
+
+                    <div class="form-group mb-4">
+                        <label asp-for="PaymentMethod" class="fw-bold mb-2">Chọn Phương thức Thanh toán *</label>
+                        <select asp-for="PaymentMethod" class="form-control form-control-lg">
+                            <option value="BankTransfer">Chuyển khoản Ngân hàng</option>
+                            <option value="Momo">Ví MoMo</option>
+                            <option value="VNPay">VNPay</option>
+                            <option value="CreditCard">Thẻ Tín dụng / Ghi nợ</option>
+                            <option value="COD">Thanh toán khi nhận hàng</option>
+                        </select>
+                        <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+                    </div>
+
+                    @* Hiển thị thông tin chuyển khoản *@
+                    <div id="bankInfo" class="alert alert-info p-3">
+                        <h5 class="alert-heading"><i class="bi bi-bank"></i> Thông tin Chuyển khoản</h5>
+                        <ul class="list-unstyled mb-2">
+                            <li><strong>Ngân hàng:</strong> Vietcombank</li>
+                            <li><strong>Số tài khoản:</strong> 1234567890</li>
+                            <li><strong>Chủ tài khoản:</strong> SOFTSTORE COMPANY</li>
+                            <li><strong>Chi nhánh:</strong> Hồ Chí Minh</li>
+                        </ul>
+                        <p class="text-danger fw-bold mb-0">
+                            <i class="bi bi-exclamation-triangle"></i> Quan trọng: Ghi đúng nội dung chuyển khoản để đơn hàng được xử lý nhanh nhất
+                        </p>
+                    </div>
+
+                    <div id="momoInfo" class="alert alert-warning p-3" style="display: none;">
+                        <h5 class="alert-heading"><i class="bi bi-phone"></i> Thanh toán qua MoMo</h5>
+                        <p class="mb-2">Quét mã QR hoặc chuyển khoản qua ứng dụng MoMo</p>
+                        <p class="text-danger fw-bold mb-0">Số điện thoại: 0900 123 456</p>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-success btn-lg py-3">
+                            <i class="bi bi-lock-fill"></i> HOÀN TẤT ĐẶT HÀNG
+                        </button>
+                        <a asp-action="Index" asp-controller="Cart" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Quay lại giỏ hàng
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    @* --- Cột Phải: Chi tiết Giỏ hàng --- *@
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-secondary text-white fw-bold">
+                <i class="bi bi-receipt"></i> Tóm tắt Đơn hàng (@Model.CartItems.Count sản phẩm)
+            </div>
+            <div class="card-body">
+                @if (Model.CartItems.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-borderless">
+                            <thead>
+                                <tr>
+                                    <th>Sản phẩm</th>
+                                    <th class="text-center">Số lượng</th>
+                                    <th class="text-end">Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.CartItems)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-grow-1">
+                                                    @* Đã chuyển chú thích lỗi thành chú thích Razor chuẩn *@
+                                                    <h6 class="mb-1">@item.Product.Name</h6>
+                                                    <small class="text-muted">@item.Price.ToString("N0", new CultureInfo("vi-VN")) ₫</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">@item.Quantity</td>
+                                        @* Đã chuyển chú thích lỗi thành chú thích Razor chuẩn *@
+                                        <td class="text-end fw-bold">@item.Total.ToString("N0", new CultureInfo("vi-VN")) ₫</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="border-top pt-3">
+                        <div class="row">
+                            <div class="col-6">
+                                <strong>Tạm tính:</strong>
+                            </div>
+                            <div class="col-6 text-end">
+                                @Model.TotalAmount.ToString("N0", new CultureInfo("vi-VN")) ₫
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-6">
+                                <strong>Phí vận chuyển:</strong>
+                            </div>
+                            <div class="col-6 text-end">
+                                Miễn phí
+                            </div>
+                        </div>
+                        <div class="row mt-2 border-top pt-2">
+                            <div class="col-6">
+                                <h5 class="text-success">Tổng cộng:</h5>
+                            </div>
+                            <div class="col-6 text-end">
+                                <h5 class="text-success">@Model.TotalAmount.ToString("N0", new CultureInfo("vi-VN")) ₫</h5>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4">
+                        <i class="bi bi-cart-x display-1 text-muted"></i>
+                        <p class="mt-3 text-muted">Giỏ hàng trống</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        @* Thông tin bảo mật *@
+        <div class="card mt-4 border-success">
+            <div class="card-body">
+                <h6 class="card-title text-success">
+                    <i class="bi bi-shield-check"></i> Bảo mật & Hỗ trợ
+                </h6>
+                <ul class="list-unstyled small">
+                    <li><i class="bi bi-check text-success"></i> Giao license key ngay sau khi thanh toán</li>
+                    <li><i class="bi bi-check text-success"></i> Hỗ trợ kỹ thuật 24/7</li>
+                    <li><i class="bi bi-check text-success"></i> Bảo hành vĩnh viễn</li>
+                    <li><i class="bi bi-check text-success"></i> Hoàn tiền trong 30 ngày</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const paymentMethod = document.getElementById('PaymentMethod');
+            const bankInfo = document.getElementById('bankInfo');
+            const momoInfo = document.getElementById('momoInfo');
+
+            function togglePaymentInfo() {
+                // Ẩn tất cả thông tin
+                bankInfo.style.display = 'none';
+                momoInfo.style.display = 'none';
+
+                // Hiển thị thông tin tương ứng
+                if (paymentMethod.value === 'BankTransfer') {
+                    bankInfo.style.display = 'block';
+                } else if (paymentMethod.value === 'Momo') {
+                    momoInfo.style.display = 'block';
+                }
+            }
+
+            // Khởi tạo và lắng nghe sự kiện
+            togglePaymentInfo();
+            paymentMethod.addEventListener('change', togglePaymentInfo);
+        });
+    </script>
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -45,6 +45,14 @@
             </div>
         </div>
 
+        @* Thêm checkbox cho HasLicenseKey *@
+        <div class="form-check mb-4">
+            <input asp-for="HasLicenseKey" class="form-check-input" type="checkbox" id="HasLicenseKey" />
+            <label class="form-check-label fw-bold" for="HasLicenseKey" data-bs-toggle="tooltip" data-bs-placement="right" title="Chọn nếu sản phẩm này có License Key để quản lý key riêng biệt">
+                Sản phẩm có License Key
+            </label>
+        </div>
+
         <div class="text-end">
             <a asp-action="Index" class="btn btn-secondary me-2">Quay lại</a>
             <button type="submit" class="btn btn-success">Lưu</button>
@@ -54,4 +62,12 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // Khởi tạo tooltip của Bootstrap
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    </script>
 }

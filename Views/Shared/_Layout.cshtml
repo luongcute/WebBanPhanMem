@@ -1,72 +1,258 @@
-﻿@* Views/Shared/_Layout.cshtml *@
+﻿@using Microsoft.AspNetCore.Identity
+@using WebBanPhanMem.Models
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Bán Phần Mềm Bản Quyền</title>
+    <title>@ViewData["Title"] - SoftStore</title>
 
-    <!-- Bootstrap & CSS -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
-<body>
-    <!-- HEADER + NAVBAR -->
-    <header class="main-banner">
-        <nav class="navbar navbar-expand-lg navbar-dark">
-            <div class="container">
+<body class="d-flex flex-column min-vh-100">
+
+    <!-- HEADER -->
+    <header class="py-3">
+        <div class="container px-3 header-tech">
+            <nav class="navbar navbar-expand-lg navbar-dark">
                 <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">
-                    <img src="~/images/logos/Logo_KST Solution.jpg" alt="Logo" width="40" height="40" class="me-2 rounded">
+                    <img src="~/images/logos/Logo_KST Solution.jpg" width="40" height="40" class="rounded me-2" />
                     SoftStore
                 </a>
-
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="collapse navbar-collapse" id="mainNav">
+
+                    <!-- MENU TRÁI -->
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item"><a class="nav-link active" asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Trang chủ</a></li>
                         <li class="nav-item"><a class="nav-link" asp-controller="Products" asp-action="Index">Sản phẩm</a></li>
                         <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="About">Giới thiệu</a></li>
                         <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Contact">Liên hệ</a></li>
+
+                        @* Dropdown Tài khoản nếu đã đăng nhập *@
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="accountMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-user-cog"></i> Tài khoản
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="accountMenu">
+                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="Profile"><i class="fas fa-id-card"></i> Thông tin cá nhân</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="ChangePassword"><i class="fas fa-key"></i> Đổi mật khẩu</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Orders" asp-action="History"><i class="fas fa-box"></i> Lịch sử mua hàng</a></li>
+                                    <li><hr class="dropdown-divider" /></li>
+                                    <li>
+                                        <form asp-controller="Account" asp-action="Logout" method="post" class="dropdown-item p-0">
+                                            <button type="submit" class="btn btn-link text-start w-100"><i class="fas fa-sign-out-alt"></i> Đăng xuất</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
                     </ul>
 
+                    <!-- MENU PHẢI -->
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Cart" asp-action="Index">
-                                <i class="bi bi-cart"></i> Giỏ hàng
+                                <i class="fa fa-shopping-cart"></i> Giỏ hàng
                             </a>
                         </li>
-                        
+
+                        @if (!SignInManager.IsSignedIn(User))
+                        {
+                            <li class="nav-item"><a class="nav-link" asp-controller="Account" asp-action="Login"><i class="fa fa-sign-in-alt"></i> Đăng nhập</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Account" asp-action="Register"><i class="fa fa-user-plus"></i> Đăng ký</a></li>
+                        }
                     </ul>
 
-
-
-
                 </div>
+            </nav>
+
+            <!-- BANNER -->
+            <div class="banner-rotator mt-3">
+                <img src="~/images/banners/foxit.jpg" alt="Foxit" class="banner-image active" />
+                <img src="~/images/banners/hcl.jpg" alt="HCL" class="banner-image" />
             </div>
-        </nav>
+        </div>
     </header>
 
-
-    <!-- MAIN CONTENT -->
-    <main class="col-md-9 col-lg-10 px-md-4 py-4">
-        @RenderBody()
-    </main>
-    <!-- FOOTER -->
-    <footer class="bg-dark text-white text-center py-3 mt-auto">
+    <!-- MAIN -->
+    <main class="flex-shrink-0 py-4">
         <div class="container">
-            <p class="mb-0">&copy; @DateTime.Now.Year - SoftStore. All rights reserved.</p>
-            <p class="small">Liên hệ: support@softstore.vn | Hotline: 0123 456 789</p>
+            @RenderBody()
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="mt-auto">
+        <div class="container px-3 footer-tech py-5">
+
+            <div class="row">
+                <div class="col-md-4 mb-4 text-start">
+                    <h5 class="footer-title">🧩 SoftStore</h5>
+                    <p class="footer-text">
+                        Cung cấp phần mềm bản quyền chính hãng.<br />
+                        Cam kết chất lượng – Dịch vụ hỗ trợ 24/7.
+                    </p>
+
+                    <div class="social-icons mt-3">
+                        <a href="https://www.facebook.com/yourpage" target="_blank" class="me-3 text-decoration-none text-white" aria-label="Facebook">
+                            <i class="fab fa-facebook fa-lg"></i>
+                        </a>
+                        <a href="https://twitter.com/yourprofile" target="_blank" class="me-3 text-decoration-none text-white" aria-label="Twitter">
+                            <i class="fab fa-twitter fa-lg"></i>
+                        </a>
+                        <a href="https://www.instagram.com/yourprofile" target="_blank" class="me-3 text-decoration-none text-white" aria-label="Instagram">
+                            <i class="fab fa-instagram fa-lg"></i>
+                        </a>
+                        <a href="https://www.linkedin.com/in/yourprofile" target="_blank" class="me-3 text-decoration-none text-white" aria-label="LinkedIn">
+                            <i class="fab fa-linkedin fa-lg"></i>
+                        </a>
+                        <a href="https://www.youtube.com/channel/yourchannel" target="_blank" class="text-decoration-none text-white" aria-label="YouTube">
+                            <i class="fab fa-youtube fa-lg"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-4">
+                    <h6 class="footer-subtitle">Sản phẩm</h6>
+                    <ul class="footer-links list-unstyled">
+                        <li><a href="/Products"><strong>Phần mềm văn phòng</strong></a></li>
+                        <li><a href="/Products"><strong>Bảo mật &amp; Antivirus</strong></a></li>
+                        <li><a href="/Products"><strong>Phần mềm doanh nghiệp</strong></a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h6 class="footer-subtitle text-uppercase fw-bold mb-3">Liên hệ</h6>
+                    <ul class="footer-contact list-unstyled fs-6">
+                        <li class="mb-2">
+                            <i class="fas fa-map-marker-alt me-2 text-primary"></i>
+                            Tầng 9, Keangnam Landmark, Hà Nội
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-envelope me-2 text-primary"></i>
+                            luongbengoan@kstsolution.com
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-phone me-2 text-primary"></i>
+                            +84 987 654 321
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-clock me-2 text-primary"></i>
+                            Thứ 2 - Thứ 6 (08:00 - 18:00)
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-user me-2 text-primary"></i>
+                            Technical Executive: <strong class="text-primary">Lương Bé Ngoan</strong>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <div class="footer-bottom text-center py-3 mt-4">
+                <p class="mb-0">&copy; @DateTime.Now.Year SoftStore | Designed by <span class="designer">Đinh Đức Lương</span></p>
+            </div>
         </div>
     </footer>
 
-    <!-- Scripts -->
-    <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js"></script>
+    <!-- SCRIPTS -->
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
     @RenderSection("Scripts", required: false)
+
+    <script>
+        // Banner slideshow
+        document.addEventListener("DOMContentLoaded", () => {
+            const imgs = document.querySelectorAll(".banner-image");
+            let i = 0;
+            setInterval(() => {
+                imgs[i].classList.remove("active");
+                i = (i + 1) % imgs.length;
+                imgs[i].classList.add("active");
+            }, 4000);
+        });
+    </script>
+
+    <style>
+        /* HEADER */
+        .header-tech {
+            background: #0d1117;
+            border-bottom: 3px solid #0d6efd;
+        }
+
+        .navbar-nav .nav-link {
+            color: #bfbfbf !important;
+            margin-right: 15px;
+            transition: color 0.2s;
+        }
+
+            .navbar-nav .nav-link:hover {
+                color: #0d6efd !important;
+            }
+
+        /* BANNER */
+        .banner-rotator {
+            position: relative;
+            width: 100%;
+            padding-top: 40%;
+            overflow: hidden;
+            border-radius: 10px;
+        }
+
+        .banner-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 1.2s ease-in-out;
+        }
+
+            .banner-image.active {
+                opacity: 1;
+            }
+
+        /* FOOTER */
+        /* Footer tổng — KHÔNG đặt background hoặc border ở đây */
+        footer {
+            background: transparent !important;
+            border-top: none !important;
+        }
+
+        /* Footer thực tế — đặt trong container để thẳng với banner */
+        .footer-tech {
+            background: #12151c;
+            color: #e5e5e5;
+            /* Cho đường viền nằm đúng theo container */
+            border-top: 3px solid #0d6efd;
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+        }
+
+        /* Phần footer-bottom (nếu có) không có nền phụ */
+        .footer-bottom {
+            background: transparent !important;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+
+        .designer {
+            color: #0d6efd;
+            font-weight: 600;
+        }
+    </style>
+
 </body>
 </html>

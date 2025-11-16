@@ -1,0 +1,31 @@
+﻿@model List<WebBanPhanMem.Areas.Admin.Models.AdminUserVM>
+
+<h2 class="mb-4">Quản lý người dùng</h2>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Họ tên</th>
+            <th>Email</th>
+            <th>Vai trò</th>
+            <th>Khóa</th>
+            <th width="150">Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var u in Model)
+        {
+            <tr>
+                <td>@u.FullName</td>
+                <td>@u.Email</td>
+                <td>@u.Role</td>
+                <td>@(u.IsLocked ? "Đang khóa" : "Hoạt động")</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@u.Id" class="btn btn-sm btn-primary">Sửa</a>
+                    <a asp-action="Delete" asp-route-id="@u.Id" class="btn btn-sm btn-danger"
+                       onclick="return confirm('Bạn chắc chắn muốn xóa?')">Xóa</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

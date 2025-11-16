@@ -6,10 +6,13 @@
 
 <div class="container mt-4">
     <h2 class="mb-4 text-success fw-bold">
-        <i class="bi bi-plus-circle"></i> Thêm danh mục mới
+        <i class="bi bi-plus-circle"></i> @ViewData["Title"]
     </h2>
 
     <form asp-action="Create" method="post" class="shadow-sm p-4 bg-white rounded">
+        @* Token chống CSRF *@
+        @Html.AntiForgeryToken()
+
         <div class="mb-3">
             <label asp-for="Name" class="form-label fw-bold"></label>
             <input asp-for="Name" class="form-control" />

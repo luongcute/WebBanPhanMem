@@ -1,0 +1,87 @@
+﻿@model IEnumerable<WebBanPhanMem.Areas.Admin.Models.LicenseKeyAdminViewModel>
+
+@{
+    ViewData["Title"] = "Quản lý License Key";
+}
+
+<div class="container mt-4">
+    <h4 class="text-primary mb-3">
+        <i class="bi bi-key"></i> Quản lý License Key - **@ViewBag.ProductName**
+    </h4>
+
+    @* Hiển thị thông báo (Thành công/Lỗi) *@
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    <div class="d-flex justify-content-between mb-3">
+        @* Nút Quay lại trang quản lý Sản phẩm *@
+        <a asp-area="Admin" asp-controller="Products" asp-action="Index" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Quay lại sản phẩm
+        </a>
+
+        <a asp-action="Create" asp-route-productId="@ViewBag.ProductId" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Thêm key mới
+        </a>
+    </div>
+
+    <table class="table table-bordered table-hover align-middle shadow-sm">
+        <thead class="table-primary text-center">
+            <tr>
+                <th>Key</th>
+                <th>Trạng thái</th>
+                <th>Ngày kích hoạt</th>
+                <th style="width:120px" class="text-nowrap">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Any())
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        @* Hiển thị key (Có thể dùng text-monospace/font-code nếu cần) *@
+                        <td>
+                            <code class="text-dark">@item.Key</code>
+                        </td>
+                        <td class="text-center">
+                            @if (item.IsUsed)
+                            {
+                                <span class="badge bg-danger">Đã dùng</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">Chưa dùng</span>
+                            }
+                        </td>
+                        <td>
+                            @* Hiển thị dấu gạch ngang nếu chưa kích hoạt *@
+                            @(item.ActivatedDate.HasValue ? item.ActivatedDate.Value.ToString("dd/MM/yyyy") : "-")
+                        </td>
+                        <td class="text-center text-nowrap">
+                            @* Nút xóa chỉ nên hiện nếu key chưa được dùng, nhưng giữ lại logic từ Controller *@
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger"
+                               onclick="return confirm('Bạn có chắc chắn muốn xóa key này không? Key đã dùng sẽ không thể xóa.');"
+                               title="Xóa Key">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="4" class="text-center text-muted">
+                        <i class="bi bi-info-circle"></i> Chưa có key nào cho sản phẩm này.
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

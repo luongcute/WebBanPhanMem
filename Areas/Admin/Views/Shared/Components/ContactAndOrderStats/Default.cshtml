@@ -1,0 +1,21 @@
+﻿@model WebBanPhanMem.Areas.Admin.Components.AdminStatsVM
+
+<li class="nav-item mb-1">
+    <a class="nav-link text-white" asp-area="Admin" asp-controller="Orders" asp-action="Index">
+        <i class="bi bi-bag-check-fill me-2"></i> Orders
+        @if (Model.PendingOrders > 0)
+        {
+            <span class="badge bg-danger ms-2">@Model.PendingOrders</span>
+        }
+    </a>
+</li>
+
+<li class="nav-item">
+    <a class="nav-link text-white" asp-area="Admin" asp-controller="ContactMessages" asp-action="Index">
+        <i class="bi bi-envelope me-2"></i> Yêu cầu Liên hệ
+        @if (Model.PendingContacts > 0)
+        {
+            <span class="badge bg-warning text-dark ms-2">@Model.PendingContacts</span>
+        }
+    </a>
+</li>

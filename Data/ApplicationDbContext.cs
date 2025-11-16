@@ -15,6 +15,9 @@ namespace WebBanPhanMem.Data
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<LicenseKey> LicenseKeys { get; set; }
 
+        public DbSet<ContactMessage> ContactMessages { get; set; } = default!;
+        // ❌ Dòng 43 gây lỗi (DbSet<CartItem>) đã bị xóa
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -32,5 +35,10 @@ namespace WebBanPhanMem.Data
                 .Property(oi => oi.Price)
                 .HasPrecision(18, 2);
         }
+
+        public DbSet<EmailAttachment> EmailAttachments { get; set; }
+
+
+        // ❌ KHÔNG CÓ DÒNG NÀO Ở ĐÂY NỮA
     }
 }

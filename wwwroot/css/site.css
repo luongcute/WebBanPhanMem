@@ -1,7 +1,6 @@
 ﻿/* ==========================================================
-   🌐 CẤU TRÚC CHUNG - SITE.CSS
-   Áp dụng cho cả TRANG CHỦ và ADMIN PANEL
-   ========================================================== */
+   🌐 CẤU TRÚC CHUNG - SITE.CSS
+   ========================================================== */
 
 /* ====== RESET CƠ BẢN ====== */
 body {
@@ -10,6 +9,10 @@ body {
     color: #333;
     margin: 0;
     padding: 0;
+    /* Đảm bảo body có chiều cao tối thiểu để d-flex hoạt động */
+    min-height: 100vh;
+    display: flex; /* Dùng flex để đặt footer xuống dưới cùng */
+    flex-direction: column;
 }
 
 a, button {
@@ -18,27 +21,26 @@ a, button {
 }
 
 /* ==========================================================
-   🔹 HEADER / NAVBAR (TRANG CHỦ)
-   ========================================================== */
+   🔹 HEADER / NAVBAR (TRANG CHỦ)
+   (Giữ nguyên code Navbar Trang chủ của bạn)
+   ========================================================== */
 
 header.main-banner {
     background: linear-gradient(90deg, #0d6efd, #003b95);
     color: #fff;
     box-shadow: 0 4px 15px rgba(0,0,0,0.25);
-    padding: 20px 0; /* tăng khoảng trống trên-dưới */
+    padding: 20px 0;
 }
 
-/* Navbar chính */
 header .navbar {
     background: transparent !important;
-    padding: 1.8rem 0; /* tăng chiều cao thanh navbar */
-    font-size: 1.25rem; /* chữ to hơn rõ rệt */
+    padding: 1.8rem 0;
+    font-size: 1.25rem;
 }
 
-/* Thương hiệu (logo + chữ) */
 .navbar-brand {
     font-weight: 800;
-    font-size: 2rem; /* chữ "SoftStore" lớn hơn */
+    font-size: 2rem;
     letter-spacing: 0.8px;
     color: #fff !important;
     display: flex;
@@ -47,14 +49,13 @@ header .navbar {
 }
 
     .navbar-brand img {
-        width: 170px; /* logo rất rõ và nổi bật */
+        width: 170px;
         height: 120px;
         border-radius: 14px;
         object-fit: cover;
         box-shadow: 0 3px 8px rgba(0,0,0,0.25);
     }
 
-/* Menu item */
 .navbar-nav .nav-link {
     color: #f8f9fa !important;
     font-weight: 500;
@@ -85,7 +86,6 @@ header .navbar {
         transform: scale(1.08);
     }
 
-/* Giỏ hàng */
 .navbar .bi-cart {
     font-size: 1.6rem;
     margin-right: 8px;
@@ -116,8 +116,8 @@ header .navbar {
 }
 
 /* ==========================================================
-   🧱 SIDEBAR + ADMIN PANEL
-   ========================================================== */
+   🧱 SIDEBAR + ADMIN PANEL
+   ========================================================== */
 
 .navbar.admin {
     background: linear-gradient(90deg, #0d6efd, #0a58ca);
@@ -134,11 +134,12 @@ header .navbar {
     padding-top: 1rem;
     box-shadow: 2px 0 10px rgba(0,0,0,0.2);
     transition: all 0.3s ease;
-    z-index: 100;
+    z-index: 1000; /* Tăng z-index để chắc chắn đè lên nội dung */
 }
 
 .sidebar-sticky {
     overflow-y: auto;
+    /* Tính toán lại chiều cao dựa trên Navbar (giả sử 56px) */
     height: calc(100vh - 56px);
 }
 
@@ -170,16 +171,18 @@ header .navbar {
     }
 
 /* ==========================================================
-   📄 MAIN CONTENT (ADMIN)
-   ========================================================== */
+   📄 MAIN CONTENT (ADMIN)
+   ========================================================== */
 
 .main-content-area {
+    /* Đảm bảo nội dung chính bắt đầu sau Sidebar */
     margin-left: 250px;
     padding: 30px;
-    background: #fff;
+    background: #f5f7fa; /* Thay đổi màu nền để tách biệt với card */
     min-height: calc(100vh - 56px - 60px);
     box-shadow: inset 0 1px 0 rgba(0,0,0,0.05);
     transition: margin-left 0.3s ease;
+    flex-grow: 1; /* Quan trọng: Đảm bảo nó lấp đầy không gian còn lại */
 }
 
 .card {
@@ -193,22 +196,34 @@ header .navbar {
         transform: translateY(-4px);
     }
 
-/* ==========================================================
-   ⚫ FOOTER
-   ========================================================== */
-
-footer {
-    background: #1e1f29;
-    color: #dee2e6;
-    font-size: 0.9rem;
-    letter-spacing: 0.3px;
-    padding: 15px 0;
-    text-align: center;
+/* Dashboard Specific Styles */
+.dashboard-card i {
+    font-size: 3rem;
 }
 
+
 /* ==========================================================
-   📱 RESPONSIVE
-   ========================================================== */
+   ⚫ FOOTER (Quan trọng: Đảm bảo Footer ở cuối)
+   ========================================================== */
+
+/* Khi dùng d-flex trong body, footer không cần margin-left */
+/* Footer mặc định cho trang khách */
+footer {
+    margin-left: 0 !important;
+    width: 100% !important;
+    background: transparent;
+}
+
+
+/* Footer trang ADMIN – chỉ áp dụng khi body có class admin-layout */
+.admin-layout footer {
+    margin-left: 250px;
+}
+
+
+/* ==========================================================
+   📱 RESPONSIVE
+   ========================================================== */
 
 @media (max-width: 992px) {
     .sidebar {
@@ -218,17 +233,29 @@ footer {
     .main-content-area {
         margin-left: 200px;
     }
+
+    footer {
+        margin-left: 200px;
+    }
 }
 
 @media (max-width: 768px) {
+    /* Khi Sidebar collapsed, nó không cố định nữa */
     .sidebar {
         position: relative;
         width: 100%;
         height: auto;
         top: 0;
+        box-shadow: none;
     }
 
+    /* Bỏ margin-left khi Sidebar ở trên cùng */
     .main-content-area {
+        margin-left: 0;
+    }
+
+    /* Bỏ margin-left cho Footer khi Sidebar ở trên cùng */
+    footer {
         margin-left: 0;
     }
 }

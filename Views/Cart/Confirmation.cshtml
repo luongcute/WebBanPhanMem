@@ -1,0 +1,88 @@
+﻿@model WebBanPhanMem.Models.Order
+@using System.Globalization
+
+@{
+    ViewData["Title"] = "Xác nhận Đơn hàng Thành công";
+
+    // Tính tổng tiền chính xác từ các OrderItem (Sử dụng Total thay vì Price * Quantity cho tính nhất quán)
+    var totalAmount = Model.Items?.Sum(i => i.Total) ?? 0;
+}
+
+<div class="container mt-5">
+
+    <div class="alert alert-success p-4 shadow-sm text-center">
+        <h2 class="alert-heading fw-bold">🎉 Đặt hàng Thành công!</h2>
+        <p class="lead mb-0">Đơn hàng của bạn đã được ghi nhận. Vui lòng hoàn tất thanh toán để nhận Keys.</p>
+    </div>
+
+    <div class="row mt-4">
+
+        @* --- Cột Trái: Thông tin Đơn hàng và Trạng thái --- *@
+        <div class="col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white fw-bold">
+                    Chi tiết Đơn hàng #@Model.Id
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-5">Ngày đặt</dt>
+
+                        @* ❌ Đã xóa các dòng chú thích lỗi/dư thừa tại đây *@
+
+                        <dd class="col-sm-7">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</dd>
+
+                        <dt class="col-sm-5">Trạng thái</dt>
+                        <dd class="col-sm-7">
+                            <span class="badge bg-warning text-dark">@Model.PaymentStatus</span>
+                        </dd>
+
+                        <dt class="col-sm-5">Khách hàng</dt>
+
+                        @* ❌ Đã xóa các dòng chú thích lỗi/dư thừa tại đây *@
+
+                        <dd class="col-sm-7">@Model.CustomerName</dd>
+
+                        <dt class="col-sm-5">Email Keys</dt>
+                        <dd class="col-sm-7">@Model.CustomerEmail</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        @* --- Cột Phải: Hướng dẫn Thanh toán Chuyển khoản --- *@
+        <div class="col-lg-7">
+            <div class="card border-info shadow-lg">
+                <div class="card-header bg-info text-white fw-bold fs-5">
+                    Hướng dẫn Thanh toán (Chuyển khoản Ngân hàng)
+                </div>
+                <div class="card-body">
+                    <p class="mb-3">
+                        Vui lòng chuyển khoản chính xác **@totalAmount.ToString("N0", new CultureInfo("vi-VN")) ₫** để đơn hàng được xử lý ngay lập tức.
+                    </p>
+
+                    <h5 class="text-secondary fw-bold">Thông tin Tài khoản Nhận:</h5>
+                    <ul class="list-unstyled fw-bold">
+                        <li>**Ngân hàng:** <span class="text-primary">ACB (Ngân hàng Á Châu)</span></li>
+                        <li>**Số tài khoản:** <span class="text-primary">1234567890</span></li>
+                        <li>**Tên chủ TK:** <span class="text-primary">CTY ABC PHAN MEM</span></li>
+                    </ul>
+
+                    <h5 class="text-danger mt-4 fw-bold">⚠️ NỘI DUNG CHUYỂN KHOẢN BẮT BUỘC:</h5>
+                    <div class="p-3 bg-light border border-danger my-3 rounded">
+                        <code class="fs-3 fw-bolder text-danger">@Model.TransactionCode</code>
+                    </div>
+
+                    <p class="text-muted small mt-3">
+                        **Quan trọng:** Đơn hàng sẽ được chuyển trạng thái **Đã Thanh Toán** và **License Keys** sẽ được gửi qua email cho bạn sau khi chúng tôi xác nhận giao dịch thành công với nội dung chuyển khoản **chính xác** như trên.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="mt-5 text-center">
+        <a href="@Url.Action("Index", "Home")" class="btn btn-primary btn-lg"><i class="bi bi-house"></i> Quay lại trang chủ</a>
+    </div>
+
+</div>

@@ -1,33 +1,13 @@
-﻿@{
+﻿@model WebBanPhanMem.Areas.Admin.Models.DashboardViewModel
+@using System.Text.Json
+@using System.Linq
+
+@{
     ViewData["Title"] = "Bảng điều khiển quản trị";
 
-    // Khai báo và khởi tạo List<string/decimal> trống để đảm bảo chúng không bao giờ là null
-    List<string> months = new List<string>();
-    List<decimal> totals = new List<decimal>();
-
-    // Lấy dữ liệu từ ViewBag và đảm bảo nó không null
-    var monthlyRevenue = ViewBag.MonthlyRevenue as IEnumerable<dynamic>;
-
-    if (monthlyRevenue != null)
-    {
-        // Duyệt qua dữ liệu và sắp xếp lại thứ tự (để biểu đồ đi từ cũ -> mới)
-        foreach (var item in monthlyRevenue.Reverse()) // Đảo ngược để hiển thị tháng cũ nhất trước
-        {
-            if (item.Month != null)
-            {
-                months.Add(item.Month.ToString());
-            }
-            if (item.Total != null)
-            {
-                // Chuyển đổi sang decimal để đảm bảo loại dữ liệu đúng trong C#
-                totals.Add((decimal)item.Total);
-            }
-        }
-    }
-
-    // Chuyển đổi dữ liệu sang chuỗi JSON để sử dụng an toàn trong JavaScript
-    var monthsJson = System.Text.Json.JsonSerializer.Serialize(months);
-    var totalsJson = System.Text.Json.JsonSerializer.Serialize(totals);
+    // Chuyển dữ liệu biểu đồ sang JSON (kèm kiểm tra null)
+    string monthsJson = Model?.RevenueMonths != null ? JsonSerializer.Serialize(Model.RevenueMonths) : "[]";
+    string totalsJson = Model?.RevenueValues != null ? JsonSerializer.Serialize(Model.RevenueValues) : "[]";
 }
 
 <div class="container mt-4">
@@ -35,152 +15,198 @@
         <i class="bi bi-speedometer2"></i> Bảng điều khiển quản trị
     </h2>
 
-    <!-- Ô thống kê tổng quan -->
+    <!-- Hàng 1: KPIs -->
     <div class="row text-center g-3 mb-4">
-        <!-- SẢN PHẨM -->
-        <div class="col-md-3">
+
+        <div class="col-md">
             <a asp-area="Admin" asp-controller="Products" asp-action="Index" class="text-decoration-none d-block">
                 <div class="dashboard-card border-start border-primary border-4 hover-shadow">
                     <i class="bi bi-box-seam text-primary"></i>
                     <h5 class="mt-2 text-primary">Sản phẩm</h5>
-                    <h3 class="text-dark">@ViewBag.TotalProducts</h3>
+                    <h3 class="text-dark">@(Model?.TotalProducts ?? 0)</h3>
                 </div>
             </a>
         </div>
 
-        <!-- ĐƠN HÀNG -->
-        <div class="col-md-3">
+        <div class="col-md">
             <a asp-area="Admin" asp-controller="Orders" asp-action="Index" class="text-decoration-none d-block">
                 <div class="dashboard-card border-start border-success border-4 hover-shadow">
                     <i class="bi bi-bag-check text-success"></i>
                     <h5 class="mt-2 text-success">Đơn hàng</h5>
-                    <h3 class="text-dark">@ViewBag.TotalOrders</h3>
+                    <h3 class="text-dark">@(Model?.TotalOrders ?? 0)</h3>
                 </div>
             </a>
         </div>
 
-        <!-- NGƯỜI DÙNG -->
-        <div class="col-md-3">
+        <div class="col-md">
             <a asp-area="Admin" asp-controller="Users" asp-action="Index" class="text-decoration-none d-block">
                 <div class="dashboard-card border-start border-warning border-4 hover-shadow">
                     <i class="bi bi-people text-warning"></i>
                     <h5 class="mt-2 text-warning">Người dùng</h5>
-                    <h3 class="text-dark">@ViewBag.TotalUsers</h3>
+                    <h3 class="text-dark">@(Model?.TotalUsers ?? 0)</h3>
                 </div>
             </a>
         </div>
 
-        <!-- DOANH THU -->
-        <div class="col-md-3">
+        <div class="col-md">
             <a asp-area="Admin" asp-controller="Reports" asp-action="Index" class="text-decoration-none d-block">
                 <div class="dashboard-card border-start border-danger border-4 hover-shadow">
                     <i class="bi bi-currency-exchange text-danger"></i>
                     <h5 class="mt-2 text-danger">Doanh thu</h5>
-                    <h3 class="text-dark">@ViewBag.TotalRevenue</h3>
+                    <h3 class="text-dark">@((Model?.TotalRevenue ?? 0).ToString("N0")) ₫</h3>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md">
+            <a asp-area="Admin" asp-controller="Reports" asp-action="Index" class="text-decoration-none d-block">
+                <div class="dashboard-card border-start border-info border-4 hover-shadow">
+                    <i class="bi bi-graph-up text-info"></i>
+                    <h5 class="mt-2 text-info">Báo cáo</h5>
+                    <h3 class="text-dark">Chi tiết</h3>
                 </div>
             </a>
         </div>
     </div>
 
-    <!-- Banner điều hướng nhanh -->
-    <div class="dashboard-banners d-flex flex-wrap gap-3 justify-content-center mb-5">
-        <a asp-area="Admin" asp-controller="Products" asp-action="Index" class="banner-card banner-products">
-            <i class="bi bi-box-seam"></i>
-            <h5>Quản lý sản phẩm</h5>
-        </a>
-        <a asp-area="Admin" asp-controller="Orders" asp-action="Index" class="banner-card banner-orders">
-            <i class="bi bi-bag"></i>
-            <h5>Đơn hàng</h5>
-        </a>
-        <a asp-area="Admin" asp-controller="Users" asp-action="Index" class="banner-card banner-users">
-            <i class="bi bi-people"></i>
-            <h5>Người dùng</h5>
-        </a>
-        <a asp-area="Admin" asp-controller="Reports" asp-action="Index" class="banner-card banner-reports">
-            <i class="bi bi-graph-up"></i>
-            <h5>Báo cáo</h5>
-        </a>
+    <!-- Hàng 2: License Keys -->
+    <div class="row text-center g-3 mb-4">
+        <div class="col-md-6">
+            <div class="dashboard-card border-start border-info border-4 hover-shadow">
+                <i class="bi bi-key text-info"></i>
+                <h5 class="mt-2 text-info">Tổng số License Keys</h5>
+                <h3 class="text-dark">@(Model?.TotalLicenseKeys ?? 0)</h3>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="dashboard-card border-start border-secondary border-4 hover-shadow">
+                <i class="bi bi-check-circle text-secondary"></i>
+                <h5 class="mt-2 text-secondary">Keys đã sử dụng</h5>
+                <h3 class="text-dark">@(Model?.UsedLicenseKeys ?? 0)</h3>
+            </div>
+        </div>
     </div>
 
     <!-- Biểu đồ doanh thu -->
     <div class="mt-5">
         <h4 class="mb-3"><i class="bi bi-bar-chart"></i> Doanh thu 6 tháng gần nhất</h4>
-        <canvas id="revenueChart" height="100"></canvas>
+        <div style="height: 300px;">
+            <canvas id="revenueChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Hàng 3: Bảng Top Sản phẩm & Đơn gần đây -->
+    <div class="row mt-5 g-4">
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white fw-bold">
+                    <i class="bi bi-star-fill"></i> Top 5 Sản phẩm bán chạy
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th class="text-center">Số lượng</th>
+                                <th class="text-end">Doanh thu</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model?.TopProducts != null)
+                            {
+                                @foreach (var item in Model.TopProducts)
+                                {
+                                    <tr>
+                                        <td>@item.ProductName</td>
+                                        <td class="text-center">@item.QuantitySold</td>
+                                        <td class="text-end">@item.Revenue.ToString("N0") ₫</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                    @if (Model?.TopProducts == null || !Model.TopProducts.Any())
+                    {
+                        <p class="text-muted text-center">Chưa có dữ liệu bán hàng.</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white fw-bold">
+                    <i class="bi bi-receipt"></i> 5 Đơn hàng gần đây
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Mã đơn</th>
+                                <th>Khách hàng</th>
+                                <th>Ngày đặt</th>
+                                <th class="text-end">Tổng tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model?.RecentOrders != null)
+                            {
+                                @foreach (var item in Model.RecentOrders)
+                                {
+                                    <tr>
+                                        <td>#@item.OrderId</td>
+                                        <td>@item.CustomerName</td>
+                                        <td>@item.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td class="text-end">@item.TotalAmount.ToString("N0") ₫</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                    @if (Model?.RecentOrders == null || !Model.RecentOrders.Any())
+                    {
+                        <p class="text-muted text-center">Chưa có đơn hàng nào.</p>
+                    }
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <script>
-        // Lấy dữ liệu từ C# (Đã được đảm bảo là JSON hợp lệ)
-        const labels = @Html.Raw(monthsJson);
-        const data = @Html.Raw(totalsJson);
+        const labels = JSON.parse('@Html.Raw(monthsJson)');
+        const data = JSON.parse('@Html.Raw(totalsJson)');
 
-        const ctx = document.getElementById('revenueChart').getContext('2d');
-
-        new Chart(ctx, {
-            type: 'bar', // Hoặc 'line'
+        new Chart(document.getElementById('revenueChart').getContext('2d'), {
+            type: 'bar',
             data: {
-                labels: labels, // Tên tháng/năm
+                labels: labels,
                 datasets: [{
                     label: 'Doanh thu (₫)',
-                    data: data, // Tổng tiền
-                    backgroundColor: 'rgba(13, 110, 253, 0.6)', // Màu xanh primary
+                    data: data,
+                    backgroundColor: 'rgba(13, 110, 253, 0.6)',
                     borderColor: 'rgba(13, 110, 253, 1)',
                     borderWidth: 1,
-                    borderRadius: 5,
+                    borderRadius: 5
                 }]
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false, // Cho phép chart lấp đầy container
+                maintainAspectRatio: false,
                 scales: {
                     y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Doanh thu (₫)'
-                        },
-                        // Định dạng tiền tệ cho trục Y
-                        ticks: {
-                            callback: function(value, index, values) {
-                                return value.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-                            }
-                        }
-                    },
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Tháng/Năm'
-                        }
+                        beginAtZero: true
                     }
                 },
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    tooltip: {
-                        // Định dạng tiền tệ cho tooltip
-                        callbacks: {
-                            label: function(context) {
-                                let label = context.dataset.label || '';
-
-                                if (label) {
-                                    label += ': ';
-                                }
-                                if (context.parsed.y !== null) {
-                                    label += context.parsed.y.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-                                }
-                                return label;
-                            }
-                        }
-                    }
-                }
+                plugins: { legend: { display: false } }
             }
         });
     </script>
 }
-
 
 <style>
     .dashboard-card {
@@ -189,37 +215,14 @@
         border-radius: 12px;
         transition: all 0.2s ease-in-out;
         box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
 
     .hover-shadow:hover {
         transform: translateY(-3px);
         box-shadow: 0 6px 20px rgba(0,0,0,0.1);
     }
-
-    .dashboard-banners .banner-card {
-        flex: 1 1 200px;
-        background: #f8f9fa;
-        border-radius: 10px;
-        padding: 25px 15px;
-        text-align: center;
-        color: #333;
-        text-decoration: none;
-        transition: 0.25s;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    }
-
-    .banner-card i {
-        font-size: 32px;
-        color: #0d6efd;
-    }
-
-    .banner-card:hover {
-        background: #0d6efd;
-        color: #fff;
-        transform: translateY(-4px);
-    }
-
-        .banner-card:hover i {
-            color: #fff;
-        }
 </style>

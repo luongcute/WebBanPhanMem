@@ -27,7 +27,7 @@
                 <th>Tên sản phẩm</th>
                 <th>Danh mục</th>
                 <th>Giá</th>
-                <th style="width:150px">Thao tác</th>
+                <th style="width:180px">Thao tác</th>
             </tr>
         </thead>
         <tbody>
@@ -50,11 +50,25 @@
                         <td>@item.CategoryName</td>
                         <td>@item.Price.ToString("N0") ₫</td>
                         <td class="text-center">
-                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning me-1">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning me-1" title="Chỉnh sửa sản phẩm">
                                 <i class="bi bi-pencil-square"></i>
                             </a>
+
+                            @* Nút Quản lý License Key chỉ hiện khi có license *@
+                            @if (item.HasLicenseKey)
+                            {
+                                <a asp-area="Admin" asp-controller="Licenses" asp-action="Index"
+                                   asp-route-productId="@item.Id"
+                                   class="btn btn-sm btn-info me-1" title="Quản lý License Key">
+                                    <i class="bi bi-key"></i> Key
+
+                                    @* Hiển thị số lượng key chưa dùng *@
+                                    <span class="badge bg-danger ms-1">@item.LicenseCount</span>
+                                </a>
+                            }
+
                             <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger"
-                               onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này không?');">
+                               onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này không?');" title="Xóa sản phẩm">
                                 <i class="bi bi-trash"></i>
                             </a>
                         </td>

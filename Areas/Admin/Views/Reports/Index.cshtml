@@ -1,0 +1,22 @@
+﻿<h3>Xuất Báo Cáo</h3>
+<div class="d-flex gap-3 mb-4">
+    <a asp-area="Admin" asp-controller="Reports" asp-action="ExportCsv"
+       class="btn btn-outline-success">
+        <i class="bi bi-file-earmark-spreadsheet"></i> Xuất CSV
+    </a>
+
+    <a asp-area="Admin" asp-controller="Reports" asp-action="ExportPdf"
+       class="btn btn-outline-danger">
+        <i class="bi bi-file-earmark-pdf"></i> Xuất PDF
+    </a>
+</div>
+
+<form asp-area="Admin" asp-controller="Reports" asp-action="ExportCsv" method="get" class="mb-4">
+    <label for="startDate">Từ ngày:</label>
+    <input type="date" id="startDate" name="startDate" class="form-control mb-2" />
+
+    <label for="endDate">Đến ngày:</label>
+    <input type="date" id="endDate" name="endDate" class="form-control mb-2" />
+
+    <button type="submit" class="btn btn-primary">Xuất CSV (Lọc)</button>
+</form>
